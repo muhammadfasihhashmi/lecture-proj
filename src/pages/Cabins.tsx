@@ -1,7 +1,11 @@
-import React from "react";
+import CabinsTable from "@/components/cabins/CabinsTable";
 
 function Cabins() {
-  return <div></div>;
+  return (
+    <div>
+      <CabinsTable />
+    </div>
+  );
 }
 
 export default Cabins;
