@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import { Outlet } from "react-router";
+import { Toaster } from "sonner";
 
 export default function Layout() {
   return (
@@ -21,6 +22,7 @@ export default function Layout() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 p-4  md:gap-6 md:p-6">
               <Outlet />
+              <Toaster closeButton position="top-center" richColors />
             </div>
           </div>
         </div>

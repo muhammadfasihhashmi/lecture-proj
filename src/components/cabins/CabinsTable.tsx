@@ -18,7 +18,6 @@ function CabinsTable() {
     queryKey: ["cabins"],
     queryFn: getCabins,
   });
-  console.log(cabins);
 
   return (
     <div className="flex flex-col gap-10">
