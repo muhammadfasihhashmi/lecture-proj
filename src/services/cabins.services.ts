@@ -1,4 +1,4 @@
-import type { InsertCabin } from "@/types/cabins.types";
+import type { InsertCabin, UpdateCabin } from "@/types/cabins.types";
 import supabase from "@/utils/supabase";
 
 export async function getCabins() {
@@ -39,6 +39,54 @@ export async function addCabin(newCabin: InsertCabin) {
       .select();
     if (error) throw new Error(error.message);
     return { data, message: "cabin added sucessfully" };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("something went wrong");
+    }
+  }
+}
+
+export async function editCabin({
+  id,
+  updatedCabin,
+}: {
+  id: number;
+  updatedCabin: UpdateCabin;
+}) {
+  try {
+    let imageUrl: string | undefined;
+
+    // Only upload a new image if the user selected one
+    if (updatedCabin.image instanceof File) {
+      const imagePath = `${Date.now()}-${updatedCabin.image.name.replaceAll("/", "-")}`;
+      const { data: imageData, error: imageError } = await supabase.storage
+        .from("cabinimages")
+        .upload(imagePath, updatedCabin.image);
+      if (imageError) throw new Error(imageError.message);
+
+      const { data: publicUrl } = supabase.storage
+        .from("cabinimages")
+        .getPublicUrl(imageData.path);
+      imageUrl = publicUrl.publicUrl;
+    }
+
+    // Destructure out the File so Supabase only ever sees a string for image
+    const { image: _image, ...rest } = updatedCabin;
+    void _image; // intentionally unused — only string URL sent to Supabase
+    const payload: typeof rest & { image?: string } = {
+      ...rest,
+      ...(imageUrl ? { image: imageUrl } : {}),
+    };
+
+    const { data, error } = await supabase
+      .from("cabins")
+      .update(payload)
+      .eq("id", id)
+      .select();
+    if (error) throw new Error(error.message);
+    return { data, message: "Cabin updated successfully" };
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

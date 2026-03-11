@@ -6,12 +6,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Card } from "../ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { getCabins } from "@/services/cabins.services";
-import AddCabinDialog from "./AddCabinDialog";
+import { EllipsisVertical } from "lucide-react";
+import { Button } from "../ui/button";
+import CabinDialog from "./CabinDialog";
+import AddCabinForm from "./AddCabinForm";
+import EditCabinForm from "./EditCabinForm";
 
-const headers = ["Cabins", "Capacity", "Price", "Discount"];
+const headers = ["Cabins", "Capacity", "Price", "Discount", ""];
 
 function CabinsTable() {
   const { data: cabins } = useQuery({
@@ -42,13 +53,43 @@ function CabinsTable() {
                 <TableCell>{cabin.name}</TableCell>
                 <TableCell>{cabin.regularPrice}</TableCell>
                 <TableCell>{cabin.maxCapacity}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">
+                        <EllipsisVertical />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem>duplicate</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <CabinDialog
+                            variant="actions"
+                            btn="edit cabin"
+                            heading="edit your cabin here"
+                            description="hello i am teaching aima dry principle"
+                            cabinForm={<EditCabinForm cabin={cabin} />}
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>delete</DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
             ))}
             <TableRow></TableRow>
           </TableBody>
         </Table>
       </Card>
-      <AddCabinDialog />
+      <CabinDialog
+        btn="add cabin"
+        heading="add new cabin"
+        description="add a new cabin to ur space"
+        cabinForm={<AddCabinForm />}
+        variant="button"
+      />
     </div>
   );
 }
